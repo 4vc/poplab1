@@ -1,43 +1,72 @@
-with Ada.Text_IO; use Ada.Text_IO;
-
+with Ada.Text_IO;
+with Ada.Integer_Text_IO;
+with Ada.Long_Long_Integer_Text_IO;
 procedure Main is
-
-   Step : Long_Long_Integer := 2; -- Step variable
 
    can_stop : boolean := false;
    pragma Atomic(can_stop);
 
-   task type break_thread;
-   task type main_thread(id : Integer);
+   task type break_thread is
+      entry Start(time_break : Integer);
+      end break_thread;
+   task type main_thread is
+         entry Start(idd : Integer; step : Long_Long_Integer);
+       end main_thread;
 
    task body break_thread is
+      time_br : Duration;
    begin
-      delay 5.0;
+      accept Start(time_break : in Integer) do
+         time_br := Duration (time_break);
+            end Start;
+
+      delay time_br;
       can_stop := true;
    end break_thread;
 
    task body main_thread is
-      sum : Long_Long_Integer := 0;
-      count : Long_Long_Integer := 0;
-   begin
+      	  sum : Long_Long_Integer := 0;
+         cnt_steps : Long_Long_Integer := 0;
+         id : Integer;
+         step : Long_Long_Integer;
+      begin
+         accept Start(idd : Integer;step : Long_Long_Integer) do
+            main_thread.id := idd;
+            main_thread.step := step;
+            end Start;
       loop
-         sum := sum + Step;
-         count := count + 1;
+         sum := sum + step;
+         cnt_steps := cnt_steps + 1;
          exit when can_stop;
       end loop;
       delay 1.0;
-      Ada.Text_IO.Put_Line(id'Img  & " - " & sum'Img & " Loop Count = " & count'Img);
+
+      Ada.Text_IO.Put_Line("id: " & id'Img & " sum: "& sum'Img & " Steps Num: " & cnt_steps'Img & " Step: " & step'Img);
    end main_thread;
 
-   b1 : break_thread;
-   t1 : main_thread(0);
-   t2 : main_thread(1);
-   t3 : main_thread(2);
-   t4 : main_thread(3);
-   t5 : main_thread(4);
-   t6 : main_thread(5);
-   t7 : main_thread(6);
-   t8 : main_thread(7);
+
+   threads_cnt : Integer;
+   step : Long_Long_Integer;
+   time_break : Integer;
+   breaker : break_thread;
+
 begin
-   null;
+   Ada.Text_IO.Put("Enter number of threads: ");
+   Ada.Integer_Text_IO.Get(threads_cnt);
+   
+    Ada.Text_IO.Put("Enter number of step: ");
+   Ada.Long_Long_Integer_Text_IO.Get(step);
+   
+   Ada.Text_IO.Put("Enter number of time break: ");
+   Ada.Integer_Text_IO.Get(time_break);
+
+
+   declare
+      A : Array(1..threads_cnt) of main_thread;
+   begin
+      breaker.Start(time_break);
+      For I in A'Range Loop
+         A(I).Start(I,step);
+         end loop;
+      end;
 end Main;
