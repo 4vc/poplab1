@@ -14,7 +14,7 @@ public class Main {
             try {
                 Thread.sleep(timeBreak * 1000L);
             } catch (InterruptedException e) {
-                // ignore
+                
             }
             canStop = true;
         }
@@ -39,7 +39,7 @@ public class Main {
             try {
                 Thread.sleep(1000L);
             } catch (InterruptedException e) {
-                // ignore
+                
             }
             System.out.println("id: " + id + " sum: " + sum + " Steps Num: " + cntSteps + " Step: " + step);
         }
