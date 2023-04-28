@@ -10,7 +10,7 @@ procedure Main is
       entry Start(time_break : Integer);
       end break_thread;
    task type main_thread is
-         entry Start(id : Integer; step : Long_Long_Integer);
+         entry Start(idd : Integer; step : Long_Long_Integer);
        end main_thread;
 
    task body break_thread is
